@@ -1,0 +1,109 @@
+DATASET:
+  TEST:
+    TYPE: HO3DV3
+    DATA_SPLIT: test
+    DATA_ROOT: ./data
+    SPLIT_MODE: paper
+    AUG: false
+    AUG_PARAM: null
+
+DATA_PRESET:
+  USE_CACHE: true
+  FILTER_NO_CONTACT: false
+  FILTER_THRESH: 0.0
+  BBOX_EXPAND_RATIO: 1.2
+  FULL_IMAGE: false
+  IMAGE_SIZE:
+    - 224
+    - 224
+  HEATMAP_SIZE:
+    - 28
+    - 28
+  HEATMAP_SIGMA: 2.0
+  CENTER_IDX: 0
+  CROP_MODEL: root_obj
+
+TRAIN:
+  BATCH_SIZE: 128
+  EPOCH: 200
+  OPTIMIZER: adam
+  LR: 5.0e-05
+  LR_FACTOR: 0.1
+  WEIGHT_DECAY: 0
+  LR_DECAY_STEP: 100
+  LR_DECAY_GAMMA: 1.0
+  MANUAL_SEED: 1
+  GRAD_CLIP: 0.001
+
+ARCH:
+  TYPE: HybridBaseline
+  PRETRAINED: "checkpoints/artiboost_ho3dv3_clasbased_200e.pth.tar"
+  BACKBONE:
+    TYPE: ResNet34
+    PRETRAINED: true
+    FREEZE_BATCHNORM: false
+  HYBRID_HEAD:
+    TYPE: IntegralDeconvHead
+    NCLASSES: 22
+    DECONV_WITH_BIAS: false
+    NORM_TYPE: softmax
+    INPUT_CHANNEL: 512
+    DEPTH_RESOLUTION: 28
+    NUM_DECONV_LAYERS: 2
+    NUM_DECONV_FILTERS:
+      - 256
+      - 256
+    NUM_DECONV_KERNELS:
+      - 4
+      - 4
+    FINAL_CONV_KERNEL: 1
+  BOX_HEAD:
+    TYPE: MLP_O
+    LAYERS_N:
+      - 512
+      - 256
+      - 128
+    OUT_CHANNEL: 6
+  PREVIOUS: []
+
+LAMBDAS:
+  - 0.5
+  - 0.2
+  - 0.1
+CRITERION:
+  - TYPE: JointsLoss
+    LAMBDA_JOINTS_3D: 1.0
+    LAMBDA_CORNERS_3D: 0.2
+
+  - TYPE: HandOrdLoss
+  - TYPE: SceneOrdLoss
+
+EVALUATOR:
+  - TYPE: LossesMetric
+    VIS_LOSS_KEYS: []
+
+  - TYPE: Hand3DPCKMetric
+    VAL_MIN: 0.0
+    VAL_MAX: 0.05
+    STEPS: 20
+
+  - TYPE: Obj3DPCKMetric
+    VAL_MIN: 0.0
+    VAL_MAX: 0.05
+    STEPS: 20
+
+  - TYPE: Mean3DEPE
+    VAL_KEYS:
+      - corners_3d_abs
+      - joints_3d_abs
+    MILLIMETERS: true
+
+  - TYPE: AR
+    USE_MSSD: true
+    MSSD_USE_CORNERS: true
+    USE_HO3D_YCB: true
+    MODEL_INFO_PATH: ./assets/extend_models_info.json
+
+  - TYPE: Vis2DMetric
+    NCOL: 6
+    NROW: 6
