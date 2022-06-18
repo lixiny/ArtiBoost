@@ -1,7 +1,7 @@
 numpy==1.22.3
 matplotlib==3.5.0
 scipy==1.5.2
-pillow==9.1.0
+pillow==9.1.1
 chumpy==0.70
 opencv-python-headless==4.5.1.48
 opencv-contrib-python-headless==4.5.3.56
