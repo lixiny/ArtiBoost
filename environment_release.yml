@@ -1,4 +1,4 @@
-name: artiboost
+name: artiboost_2
 channels:
   - pytorch
   - nvidia
@@ -7,7 +7,7 @@ channels:
   - defaults
 dependencies:
   - python=3.8
-  - pytorch==1.9.0
+  - pytorch==1.8.1
   - cudatoolkit==11.1.1
   - torchvision
   - ipython

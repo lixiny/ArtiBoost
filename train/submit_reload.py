@@ -75,10 +75,6 @@ def main_worker(gpu_id, time_f):
 
 def main():
     exp_time = time()
-    if arg.distributed:
-        logger.error(f"Submit model does't support DDP, use DP instead")
-        arg.distributed = False
-
     logger.info("====> Use Data Parallel <====")
     main_worker(arg.gpus[0], exp_time)
 
