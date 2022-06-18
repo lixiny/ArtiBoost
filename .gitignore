@@ -142,7 +142,6 @@ fail_images/**
 /paper_images/**
 /thirdparty/
 *.json
-*.png
 
 render/YCB_Affordance/**
 
