@@ -25,6 +25,7 @@ from anakin.utils.transform import batch_ref_bone_len
 
 @DATASET.register_module
 class DexYCB(HOdata):
+
     @enable_lower_param
     def __init__(self, **cfg):
         super().__init__(**cfg)
@@ -41,17 +42,13 @@ class DexYCB(HOdata):
             use_pca=True,
             ncomps=45,
         )
-        self.dexycb_mano_left = (
-            ManoLayer(
-                flat_hand_mean=False,
-                side="left",
-                mano_assets_root="assets/mano_v1_2",
-                use_pca=True,
-                ncomps=45,
-            )
-            if self.use_left_hand
-            else None
-        )
+        self.dexycb_mano_left = (ManoLayer(
+            flat_hand_mean=False,
+            side="left",
+            mano_assets_root="assets/mano_v1_2",
+            use_pca=True,
+            ncomps=45,
+        ) if self.use_left_hand else None)
 
         self.load_dataset()
 
@@ -99,9 +96,8 @@ class DexYCB(HOdata):
                         continue
                     if (self.filter_invisible_hand or self.filter_no_contact) and np.all(self.get_joints_2d(i) == -1.0):
                         continue
-                    if self.filter_no_contact and (
-                        cdist(self.get_obj_verts_transf(i), self.get_joints_3d(i)).min() * 1000.0 > self.filter_thresh
-                    ):
+                    if self.filter_no_contact and (cdist(self.get_obj_verts_transf(i), self.get_joints_3d(i)).min() *
+                                                   1000.0 > self.filter_thresh):
                         continue
                     self.sample_idxs.append(i)
                 with open(self.cache_path, "wb") as p_f:
@@ -164,9 +160,9 @@ class DexYCB(HOdata):
             corners_vis = np.ones(self.ncorners)
         else:
             corners_2d = self.get_corners_2d(idx)
-            corners_vis = ((corners_2d[:, 0] >= 0) & (corners_2d[:, 0] < self.raw_size[0])) & (
-                (corners_2d[:, 1] >= 0) & (corners_2d[:, 1] < self.raw_size[1])
-            )
+            corners_vis = ((corners_2d[:, 0] >= 0) &
+                           (corners_2d[:, 0] < self.raw_size[0])) & ((corners_2d[:, 1] >= 0) &
+                                                                     (corners_2d[:, 1] < self.raw_size[1]))
             # TODO use Depth Testing
             # sample = self.dataset[idx]
             # corners_2d_idx = corners_2d[corners_vis].astype(np.int)
@@ -268,8 +264,8 @@ class DexYCB(HOdata):
         R, t = transf[:3, :3], transf[:, 3:]
         new_t = R @ offset.reshape(3, 1) + t
         new_transf = np.concatenate(
-            [np.concatenate([R, new_t], axis=1), np.array([[0.0, 0.0, 0.0, 1.0]], dtype=np.float32)]
-        )
+            [np.concatenate([R, new_t], axis=1),
+             np.array([[0.0, 0.0, 0.0, 1.0]], dtype=np.float32)])
         return new_transf.astype(np.float32)
 
     # * deprecated
@@ -290,9 +286,9 @@ class DexYCB(HOdata):
         grasp_ycb_idx = sample["ycb_ids"][sample["ycb_grasp_ind"]]
         obj_mesh = self.obj_raw_meshes[grasp_ycb_idx]
         # NOTE: verts_can = verts - bbox_center
-        verts_can, obj_cantrans, obj_canscale = transform.center_vert_bbox(
-            np.asfarray(obj_mesh.vertices, dtype=np.float32), scale=False
-        )  # !! CENTERED HERE
+        verts_can, obj_cantrans, obj_canscale = transform.center_vert_bbox(np.asfarray(obj_mesh.vertices,
+                                                                                       dtype=np.float32),
+                                                                           scale=False)  # !! CENTERED HERE
         return verts_can, obj_cantrans, obj_canscale
 
     # * deprecated

@@ -113,7 +113,7 @@ class HO3D(HOdata):
         self.seq_idx = annotations["seq_idx"]
         self.annot_mapping = annotations["annot_mapping"]
         self.sample_idxs = list(range(len(self.seq_idx)))
-        self.obj_map = {v: k for k, v in CONST.YCB_IDX2CLASSES.items()}
+        self.obj_mapping_name2id = {v: k for k, v in CONST.YCB_IDX2CLASSES.items()}
         if self.mini_factor_of_dataset != float(1):
             random.Random(1).shuffle(self.sample_idxs)
             self.sample_idxs = self.sample_idxs[:int(self.mini_factor_of_dataset * len(self.sample_idxs))]
@@ -364,7 +364,7 @@ class HO3D(HOdata):
         seq, img_idx = self.seq_idx[idx]
         annot = self.annot_mapping[seq][img_idx]
         obj_name = annot["objName"]
-        return self.obj_map[obj_name]
+        return self.obj_mapping_name2id[obj_name]
 
     def get_meta(self, idx):
         seq, img_idx = self.seq_idx[idx]

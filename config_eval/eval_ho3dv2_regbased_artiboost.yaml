@@ -37,7 +37,7 @@ TRAIN:
 
 ARCH:
   TYPE: HOPRegNet
-  PRETRAINED: "checkpoints/artiboost_ho3dv2_regbased_200e.pth.tar"
+  PRETRAINED: "checkpoints/artiboost_ho3dv2_regbased_100e.pth.tar"
   BACKBONE:
     TYPE: ResNet34
     PRETRAINED: true

@@ -17,7 +17,7 @@ cudnn.benchmark = True
 mano_layer = ManoLayer(
     center_idx=9,
     side="right",
-    mano_root="assets/mano",
+    mano_root="assets/mano_v1_2",
     use_pca=False,
     flat_hand_mean=True,
 )

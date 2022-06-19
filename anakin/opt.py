@@ -30,7 +30,7 @@ parser.add_argument("--test_freq",
 parser.add_argument("--gpu_render_port", type=str, default="34567")
 "-------------------------------------dataset submit options-------------------------------------"
 parser.add_argument("--resume_epoch", help="resume from the given epoch", type=int, default=0)
-parser.add_argument("--submit_dataset", type=str, default="ho3d")
+parser.add_argument("--submit_dataset", type=str, default="hodata")
 parser.add_argument("--filter_unseen_obj_idxs", type=int, nargs="+", default=[])
 parser.add_argument("--true_root", action="store_true", help="use GT hand root")
 parser.add_argument("--true_bone_scale", action="store_true", help="use GT bone length")

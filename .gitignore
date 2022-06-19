@@ -115,10 +115,8 @@ runs/**
 # custom
 jup_scripts/
 .vscode/
-/checkpoints/
-/checkpoints
-/checkpoints_frozen/
-/checkpoints_frozen
+checkpoints/*
+!checkpoints/.gitkeep
 /common/
 /common
 /logs/
@@ -136,11 +134,13 @@ jup_scripts/
 /tmp/
 anchor/*
 manopth/**
-thirdparty/**
+
+thirdparty/*
+!thirdparty/.gitkeep
+
 fail_images/**
 /releasemodels
 /paper_images/**
-/thirdparty/
 *.json
 
 render/YCB_Affordance/**

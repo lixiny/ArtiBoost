@@ -26,7 +26,10 @@ def set_all_seeds(seed):
 def main_worker(gpu_id, time_f):
     rank = 0  # only one process.
     set_all_seeds(cfg["TRAIN"]["MANUAL_SEED"])
-    recorder = Recorder(arg.exp_id, cfg, rank=rank, time_f=time_f)
+
+    cfg_name = arg.cfg.split("/")[-1].split(".")[0]
+    exp_id = f"submit_{cfg_name}"
+    recorder = Recorder(exp_id, cfg, rank=rank, time_f=time_f, eval_only=True)
     logger.info(f"dump args: {arg, cfg['TRAIN']}")
 
     logger.warning(f"Submit with {arg.submit_dataset} dataset!")
@@ -49,7 +52,7 @@ def main_worker(gpu_id, time_f):
     metrics_list = builder.build_evaluator_metric_list(cfg["EVALUATOR"], cfg["DATA_PRESET"], arg=arg)
     evaluator = Evaluator(cfg, metrics_list=metrics_list)
 
-    dump_fname = arg.cfg.split("/")[-1].split(".")[0]
+    dump_fname = cfg_name
     dump_fname += "_trueroot" if arg.true_root else ""
     dump_fname += "_truebonescale" if arg.true_bone_scale else ""
     dump_fname += "_pseudoroot" if arg.use_pseudo_hand_root else ""
@@ -57,7 +60,9 @@ def main_worker(gpu_id, time_f):
     dump_fname += "_fitjoints" if arg.postprocess_fit_mesh and arg.postprocess_fit_mesh_use_fitted_joints else ""
     dump_fname += "_SUBMIT"
     dump_fname += ".json" if not arg.resume_epoch else f"_epoch{arg.resume_epoch}.json"
-    dump_path = os.path.join("./common", dump_fname)
+    dump_path = os.path.join(recorder.dump_path, dump_fname)
+
+    draw_path = os.path.join(recorder.dump_path, "rendered_image")
 
     with torch.no_grad():
         model.eval()
@@ -67,7 +72,8 @@ def main_worker(gpu_id, time_f):
                           criterion=criterion,
                           evaluator=evaluator,
                           rank=rank,
-                          dump_path=dump_path)
+                          dump_path=dump_path,
+                          draw_path=draw_path)
 
     recorder.record_evaluator(evaluator, 0, TrainMode.TEST)
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

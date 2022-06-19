@@ -14,6 +14,7 @@ from anakin.utils.logger import logger
 
 @METRIC.register_module
 class AR(Metric):
+
     def __init__(self, **cfg) -> None:
         super().__init__()
         self.vsd = VSD(**cfg) if cfg.get("USE_VSD", False) else None
@@ -61,6 +62,7 @@ class AR(Metric):
 
 
 class VSD:
+
     def __init__(self, **cfg) -> None:
         super().__init__()
         raise NotImplementedError()
@@ -70,6 +72,7 @@ class VSD:
 
 
 class MSSD:
+
     def __init__(self, **cfg) -> None:
         super().__init__()
 
@@ -88,7 +91,8 @@ class MSSD:
 
         self.model_sym = {}
         for obj_idx in range(1, len(self.model_info) + 1):
-            self.model_sym[obj_idx] = get_symmetry_transformations(self.model_info[str(obj_idx)], self.max_sym_disc_step)
+            self.model_sym[obj_idx] = get_symmetry_transformations(self.model_info[str(obj_idx)],
+                                                                   self.max_sym_disc_step)
         R, t = [], []
         for obj_idx in range(1, len(self.model_info) + 1):
             obj_R, obj_t = [], []
@@ -120,9 +124,8 @@ class MSSD:
             batch_pts = targs["obj_verts_can"].numpy()
 
         for i, obj_idx in enumerate(targs["obj_idx"].tolist()):
-            e = mssd(
-                batch_pred_R[i], batch_pred_t[i], batch_gt_R[i], batch_gt_t[i], batch_pts[i], self.model_sym[obj_idx]
-            )
+            e = mssd(batch_pred_R[i], batch_pred_t[i], batch_gt_R[i], batch_gt_t[i], batch_pts[i],
+                     self.model_sym[obj_idx])
             self.objs_error[obj_idx].update(e, n=1)
 
     def feed(self, preds: Dict, targs: Dict, **kwargs):
@@ -145,15 +148,15 @@ class MSSD:
                 sym_can = (torch.einsum("kmn,bvn->bkmv", sym_R, can) + sym_t[None, :]).transpose(-2, -1)
             else:
                 cam_extr = torch.tensor(
-                    [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], dtype=torch.float32, device=device
+                    [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]],
+                    dtype=torch.float32,
+                    device=device,
                 )
-                sym_can = (
-                    cam_extr @ (torch.einsum("kmn,bnv->bkmv", sym_R, cam_extr @ can.transpose(-2, -1)) + sym_t)
-                ).transpose(-2, -1)
+                sym_can = (cam_extr @ (torch.einsum("kmn,bnv->bkmv", sym_R, cam_extr @ can.transpose(-2, -1)) + sym_t)
+                          ).transpose(-2, -1)
 
-            sym_3d_abs = (
-                torch.einsum("bij,bklj->bkil", transf[:, :3, :3], sym_can) + transf[:, None, :3, 3:]
-            ).transpose(-2, -1)
+            sym_3d_abs = (torch.einsum("bij,bklj->bkil", transf[:, :3, :3], sym_can) +
+                          transf[:, None, :3, 3:]).transpose(-2, -1)
 
             pred_rot = preds["box_rot_rotmat"][mask]
             pred_tsl = preds["boxroot_3d_abs"][mask]
@@ -164,15 +167,11 @@ class MSSD:
             if self.center_idx is None:
                 mssd_value = torch.norm(sym_3d_abs - pred_3d_abs.unsqueeze(1), dim=-1).max(-1)[0].min(-1)[0]
             else:
-                mssd_value = (
-                    torch.norm(
-                        (sym_3d_abs - targs[Queries.ROOT_JOINT][mask][:, None, None, :].to(device))
-                        - (pred_3d_abs - preds["joints_3d_abs"][mask][:, [self.center_idx]]).unsqueeze(1),
-                        dim=-1,
-                    )
-                    .max(-1)[0]
-                    .min(-1)[0]
-                )
+                mssd_value = (torch.norm(
+                    (sym_3d_abs - targs[Queries.ROOT_JOINT][mask][:, None, None, :].to(device)) -
+                    (pred_3d_abs - preds["joints_3d_abs"][mask][:, [self.center_idx]]).unsqueeze(1),
+                    dim=-1,
+                ).max(-1)[0].min(-1)[0])
             self.objs_error[obj_idx].update(mssd_value.sum().item(), n=mssd_value.numel())
 
     @property
@@ -188,7 +187,8 @@ class MSSD:
     def values(self) -> Dict:
         _values = {}
         for idx, avg_m in self.objs_error.items():
-            _values[f"{str(idx)}{'.corner' if self.mssd_use_corners else ''}.mssd"] = avg_m.avg * 1000.0  # in millimeter
+            _values[
+                f"{str(idx)}{'.corner' if self.mssd_use_corners else ''}.mssd"] = avg_m.avg * 1000.0  # in millimeter
         return _values
 
     def __str__(self) -> str:
@@ -196,6 +196,7 @@ class MSSD:
 
 
 class MSPD:
+
     def __init__(self, **cfg) -> None:
         super().__init__()
         raise NotImplementedError()

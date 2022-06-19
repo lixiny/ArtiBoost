@@ -35,14 +35,14 @@ class SubmitEpochPass(metaclass=ABCMeta):
 
         return fn
 
-    def __init__(self, cfg):  # TODO
+    def __init__(self, cfg, ):  # TODO
         # self.true_root: bool = cfg["TRUE_ROOT"]  # TODO move to freihand
         self.dump: bool = arg.submit_dump
         self.fit_mesh: bool = arg.postprocess_fit_mesh
         self.fit_mesh_ik: str = arg.postprocess_fit_mesh_ik
         self.fit_mesh_use_fitted_joints = arg.postprocess_fit_mesh_use_fitted_joints
         self.postprocess_draw: bool = arg.postprocess_draw
-        self.postprocess_draw_path: Optional[str] = arg.postprocess_draw_path
+        # self.postprocess_draw_path: Optional[str] = arg.postprocess_draw_path
 
         if self.fit_mesh:
             self.fitting_unit = FittingUnit()

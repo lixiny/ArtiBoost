@@ -24,7 +24,7 @@ class ManoLayer:
         flat_hand_mean=True,
         ncomps=6,
         side="right",
-        mano_root="assets/mano",
+        mano_root="assets/mano_v1_2",
         use_pca=True,
         root_rot_mode="axisang",
         joint_rot_mode="axisang",
@@ -49,9 +49,9 @@ class ManoLayer:
             self.ncomps = 45
 
         if side == "right":
-            self.mano_path = os.path.join(mano_root, "MANO_RIGHT.pkl")
+            self.mano_path = os.path.join(mano_root, "models", "MANO_RIGHT.pkl")
         elif side == "left":
-            self.mano_path = os.path.join(mano_root, "MANO_LEFT.pkl")
+            self.mano_path = os.path.join(mano_root, "models", "MANO_LEFT.pkl")
 
         smpl_data = self._ready_arguments(self.mano_path)
 
@@ -138,7 +138,7 @@ class ManoLayer:
 
         batch_size = quat.shape[0]
 
-        w2, x2, y2, z2 = w ** 2, x ** 2, y ** 2, z ** 2
+        w2, x2, y2, z2 = w**2, x**2, y**2, z**2
         wx, wy, wz = w * x, w * y, w * z
         xy, xz, yz = x * y, x * z, y * z
 
@@ -180,18 +180,18 @@ class ManoLayer:
         return cat_res
 
     def __call__(
-        self,
-        pose_coeffs,
-        betas=np.zeros(1),
+            self,
+            pose_coeffs,
+            betas=np.zeros(1),
     ):
         batch_size = pose_coeffs.shape[0]
         # Get axis angle from PCA components and coefficients
         # Remove global rot coeffs
-        hand_pose_coeffs = pose_coeffs[:, self.rot : self.rot + self.ncomps]
+        hand_pose_coeffs = pose_coeffs[:, self.rot:self.rot + self.ncomps]
         full_hand_pose = hand_pose_coeffs
 
         # Concatenate back global rot
-        full_pose = np.concatenate((pose_coeffs[:, : self.rot], self.hands_mean + full_hand_pose), 1)
+        full_pose = np.concatenate((pose_coeffs[:, :self.rot], self.hands_mean + full_hand_pose), 1)
         # compute rotation matrixes from axis-angle while skipping global rotation
         pose_map, rot_map = self._posemap_axisang(full_pose)
         root_rot = rot_map[:, :9].reshape(batch_size, 3, 3)
@@ -226,8 +226,7 @@ class ManoLayer:
         all_transforms = [root_trans[:, np.newaxis, ...]]
         lev1_j_rel = lev1_j - root_j.transpose((0, 2, 1))
         lev1_rel_transform_flt = self._with_zeros(
-            np.concatenate((lev1_rots, lev1_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4)
-        )
+            np.concatenate((lev1_rots, lev1_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4))
         root_trans_flt = np.tile(root_trans[:, np.newaxis, ...], (1, 5, 1, 1)).reshape(root_trans.shape[0] * 5, 4, 4)
         lev1_flt = np.matmul(root_trans_flt, lev1_rel_transform_flt)
         all_transforms.append(lev1_flt.reshape(all_rots.shape[0], 5, 4, 4))
@@ -235,16 +234,14 @@ class ManoLayer:
         # Get lev2 results
         lev2_j_rel = lev2_j - lev1_j
         lev2_rel_transform_flt = self._with_zeros(
-            np.concatenate((lev2_rots, lev2_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4)
-        )
+            np.concatenate((lev2_rots, lev2_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4))
         lev2_flt = np.matmul(lev1_flt, lev2_rel_transform_flt)
         all_transforms.append(lev2_flt.reshape(all_rots.shape[0], 5, 4, 4))
 
         # Get lev3 results
         lev3_j_rel = lev3_j - lev2_j
         lev3_rel_transform_flt = self._with_zeros(
-            np.concatenate((lev3_rots, lev3_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4)
-        )
+            np.concatenate((lev3_rots, lev3_j_rel[..., np.newaxis]), 3).reshape(-1, 3, 4))
         lev3_flt = np.matmul(lev2_flt, lev3_rel_transform_flt)
         all_transforms.append(lev3_flt.reshape(all_rots.shape[0], 5, 4, 4))
 
