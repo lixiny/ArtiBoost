@@ -1,4 +1,4 @@
-name: artiboost_2
+name: artiboost
 channels:
   - pytorch
   - nvidia
