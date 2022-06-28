@@ -37,7 +37,7 @@
     </a>
     <a href='#' style='padding-left: 0.5rem;'>
       <img src='https://img.shields.io/badge/Project-Page-blue?style=flat&logo=Google%20chrome&logoColor=blue' alt='Project Page'>
-    <a href='#' style='padding-left: 0.5rem;'>
+    <a href='https://www.youtube.com/watch?v=QbPsjWRyloY' style='padding-left: 0.5rem;'>
       <img src='https://img.shields.io/badge/Youtube-Video-red?style=flat&logo=youtube&logoColor=red' alt='Youtube Video'>
     </a>
   </p>
