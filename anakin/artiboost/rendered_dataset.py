@@ -269,6 +269,7 @@ class RenderedDataset(torch.utils.data.Dataset):
         img = tvF.to_tensor(img).float()
         img = tvF.normalize(img, [0.5, 0.5, 0.5], [1, 1, 1])
         sample[Queries.IMAGE] = img
+        sample[Queries.SAMPLE_IDX] = index
 
         return sample
 

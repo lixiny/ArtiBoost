@@ -286,10 +286,21 @@ class DexYCB(HOdata):
         grasp_ycb_idx = sample["ycb_ids"][sample["ycb_grasp_ind"]]
         obj_mesh = self.obj_raw_meshes[grasp_ycb_idx]
         # NOTE: verts_can = verts - bbox_center
-        verts_can, obj_cantrans, obj_canscale = transform.center_vert_bbox(np.asfarray(obj_mesh.vertices,
-                                                                                       dtype=np.float32),
-                                                                           scale=False)  # !! CENTERED HERE
+        verts_can, obj_cantrans, obj_canscale = \
+            transform.center_vert_bbox(np.asfarray(obj_mesh.vertices,dtype=np.float32),scale=False)
         return verts_can, obj_cantrans, obj_canscale
+
+    def get_obj_verts_can_by_obj_id(self, obj_id):
+        obj_mesh = self.obj_raw_meshes[obj_id]
+        # NOTE: verts_can = verts - bbox_center
+        verts_can, obj_cantrans, obj_canscale = \
+            transform.center_vert_bbox(np.asfarray(obj_mesh.vertices,dtype=np.float32),scale=False)
+        return verts_can, obj_cantrans, obj_canscale
+
+    def get_obj_faces_by_obj_id(self, obj_id):
+        obj_mesh = self.obj_raw_meshes[obj_id]
+        faces = np.array(obj_mesh.faces).astype(np.long)
+        return faces
 
     # * deprecated
     def _get_raw_obj_verts(self, idx):

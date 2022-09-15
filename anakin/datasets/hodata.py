@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 import torchvision.transforms.functional as tvF
-from anakin.datasets.hoquery import Queries, SynthQueries, match_collate_queries
+from anakin.datasets.hoquery import (Queries, SynthQueries, match_collate_queries)
 from anakin.utils import img_augment, transform
 from anakin.utils.logger import logger
 from anakin.utils.misc import CONST

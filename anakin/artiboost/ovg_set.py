@@ -67,10 +67,10 @@ class OVGSet(torch.utils.data.Dataset):
         self.n_all_choices = self.n_obj * self.n_persp_center * self.n_grasp
         if self.n_all_choices < self.config_len_train:
             logger.warning(f"ovg config_len_train {self.config_len_train} is over all possible combination "
-                           "of number {self.n_all_choices}, but not capped")
+                           f"of number {self.n_all_choices}, but not capped")
         if self.n_all_choices < self.config_len_val:
             logger.warning(f"ovg config_len_val {self.config_len_val} is over all possible combination "
-                           "of number {self.n_all_choices}, capped")
+                           f"of number {self.n_all_choices}, capped")
             self.config_len_val = self.n_all_choices
             logger.info(f"ovg config_len_val is set to {self.config_len_val}")
         # endregion

@@ -42,6 +42,7 @@ DirectionalLight = NamedTuple("DirectionalLight", [("color", np.ndarray), ("inte
 
 
 class Renderer:
+
     def __init__(
         self,
         width: int,
@@ -95,9 +96,13 @@ class Renderer:
         if backgrounds is None:
             logger.warning("background is not given, use black instead")
         self.backgrounds = [np.asarray(i) for i in backgrounds]
+        self.backgrounds = [cv2.resize(i, (int(1.5 * self.width), int(1.5 * self.height))) for i in self.backgrounds]
 
     def __call__(self, obj_name: str, obj_pose: np.ndarray, hand_verts: np.ndarray, motion_blur: int = 0) -> Image:
         hid = np.random.randint(len(self.hand_meshes))
+        for light in self.scene.lights:
+            light.intensity = np.random.uniform(1.0, 5.0)
+
         self.hand_meshes[hid].update_verts(hand_verts[self.hand_mapping[hid]])
         if obj_name != CONST.DUMMY:
             self.scene.show_node(obj_name, pose=obj_pose)
@@ -127,11 +132,11 @@ class Renderer:
             crop_width = int(self.width / self.height * crop_height)
         rand_x = np.random.randint(self.backgrounds[bid].shape[0] - crop_height + 1)
         rand_y = np.random.randint(self.backgrounds[bid].shape[1] - crop_width + 1)
-        crop_img = self.backgrounds[bid][rand_x : rand_x + crop_height, rand_y : rand_y + crop_width]
+        crop_img = self.backgrounds[bid][rand_x:rand_x + crop_height, rand_y:rand_y + crop_width]
         return cv2.resize(crop_img, dsize=(self.width, self.height))
 
 
-def load_bg(bgs_path: Union[str, List[str]] = "assets/synth_bg_HO3D"):
+def load_bg(bgs_path: Union[str, List[str]] = "assets/synth_bg"):
     bgs = []
     if type(bgs_path) == str:
         bgs_path_list = [bgs_path]

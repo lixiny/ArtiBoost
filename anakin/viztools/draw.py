@@ -9,11 +9,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.tri as mtri
 
-from mayavi import mlab
-import uuid
-
-mlab.options.offscreen = True
-
 from .misc import CONSTANTS
 
 
@@ -199,9 +194,9 @@ def draw_3d_skeleton(image_size, joints_xyz=None, corners_xyz=None):
         line_wd = 2
         for joint_ind in range(joints_xyz.shape[0]):
             ax.plot(
-                joints_xyz[joint_ind : joint_ind + 1, 0],
-                joints_xyz[joint_ind : joint_ind + 1, 1],
-                joints_xyz[joint_ind : joint_ind + 1, 2],
+                joints_xyz[joint_ind:joint_ind + 1, 0],
+                joints_xyz[joint_ind:joint_ind + 1, 1],
+                joints_xyz[joint_ind:joint_ind + 1, 2],
                 ".",
                 c=CONSTANTS.color_hand_joints[joint_ind],
                 markersize=marker_sz,
@@ -239,6 +234,11 @@ def draw_3d_skeleton(image_size, joints_xyz=None, corners_xyz=None):
 
 
 def draw_3d_mesh_mayavi(image_size, hand_xyz=None, hand_face=None, obj_xyz=None, obj_face=None, ratio=400 / 224):
+    from mayavi import mlab
+    import uuid
+
+    mlab.options.offscreen = True
+
     cache_path = CONSTANTS.mayavi_cache_path
     tempfile_name = "{}.png".format(str(uuid.uuid1()))
     os.makedirs(cache_path, exist_ok=True)
@@ -300,8 +300,75 @@ def save_a_image_with_joints(image, cam_param, pose_uv, pose_xyz, file_name, pad
     cv2.imwrite(file_name, grid_image)
 
 
+def save_a_image_with_joints_corners(
+    image,
+    cam_param,
+    pose_uv,
+    corners_uv,
+    pose_xyz,
+    corners_xyz,
+    file_name,
+    obj_verts_xyz=None,
+    obj_faces=None,
+    padding=0,
+    ret=False,
+):
+    img_list = []
+    frame = image.copy()
+    frame = (frame[:, :, (2, 1, 0)] * 255).astype("uint8")
+    img_list.append(frame)
+
+    obj_verts_2d = (cam_param @ obj_verts_xyz.T).T
+    obj_verts_2d = obj_verts_2d[:, 0:2] / obj_verts_2d[:, 2:3]
+    verts_overlay = image.copy()
+    verts_overlay = verts_overlay[:, :, (2, 1, 0)]
+    verts_overlay = (verts_overlay * 255).astype("uint8").copy()
+
+    for vid in range(obj_verts_2d.shape[0]):
+        v = obj_verts_2d[vid, 0].astype("int32"), obj_verts_2d[vid, 1].astype("int32")
+        cv2.circle(
+            verts_overlay,
+            v,
+            radius=1,
+            color=CONSTANTS.colors["colors"] * np.array(255),
+            thickness=-1,
+            lineType=cv2.CV_AA if cv2.__version__.startswith("2") else cv2.LINE_AA,
+        )
+    img_list.append(verts_overlay)
+
+    skeleton_overlay = draw_2d_skeleton(image, joints_uv=pose_uv, corners_uv=corners_uv)
+    skeleton_3d = draw_3d_skeleton(image.shape[:2], joints_xyz=pose_xyz, corners_xyz=corners_xyz)
+    img_list = img_list + [skeleton_overlay, skeleton_3d]
+
+    image_height = image.shape[0]
+    image_width = image.shape[1]
+    num_column = len(img_list)
+
+    grid_image = np.zeros(((image_height + padding), num_column * (image_width + padding), 3), dtype=np.uint8)
+
+    width_begin = 0
+    width_end = image_width
+    for show_img in img_list:
+        grid_image[:, width_begin:width_end, :] = show_img[..., :3]
+        width_begin += image_width + padding
+        width_end = width_begin + image_width
+    if ret:
+        return grid_image
+
+    cv2.imwrite(file_name, grid_image)
+
+
 def save_a_image_with_mesh_joints(
-    image, cam_param, mesh_xyz, face, pose_uv, pose_xyz, file_name, padding=0, ret=False, renderer=None
+    image,
+    cam_param,
+    mesh_xyz,
+    face,
+    pose_uv,
+    pose_xyz,
+    file_name,
+    padding=0,
+    ret=False,
+    renderer=None,
 ):
     frame = image.copy()
     frame1 = renderer(mesh_xyz, face, cam_param, img=frame)
@@ -348,19 +415,21 @@ def save_a_image_with_mesh_joints_objects(
 ):
     frame = image.copy()
     frame1 = renderer(
-        [mesh_xyz, obj_mesh_xyz],
-        [face, obj_face],
+        [mesh_xyz],
+        [face],
         cam_param,
         img=frame,
-        vertex_color=[np.array([102 / 255, 209 / 255, 243 / 255]), np.array([255 / 255, 163 / 255, 172 / 255])],
+        vertex_color=[np.array([102 / 255, 209 / 255, 243 / 255])],
     )
     rend_img_overlay = cv2.cvtColor(frame1, cv2.COLOR_RGB2BGR)
 
     skeleton_overlay = draw_2d_skeleton(image, joints_uv=pose_uv, corners_uv=corners_uv)
     skeleton_3d = draw_3d_skeleton(image.shape[:2], joints_xyz=pose_xyz, corners_xyz=corners_xyz)
-    mesh_3d = draw_3d_mesh_mayavi(
-        image.shape[:2], hand_xyz=mesh_xyz, hand_face=face, obj_xyz=obj_mesh_xyz, obj_face=obj_face
-    )
+    mesh_3d = draw_3d_mesh_mayavi(image.shape[:2],
+                                  hand_xyz=mesh_xyz,
+                                  hand_face=face,
+                                  obj_xyz=obj_mesh_xyz,
+                                  obj_face=obj_face)
 
     img_list = [skeleton_overlay, rend_img_overlay, mesh_3d, skeleton_3d]
     image_height = image.shape[0]

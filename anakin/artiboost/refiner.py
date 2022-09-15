@@ -115,6 +115,38 @@ class Refiner(nn.Module):
         super().__init__()
 
 
+@register(reg=Refiner.build_mapping, key="null")
+class NullRefine(nn.Module):
+
+    def __init__(self, cfg):
+        super(NullRefine, self).__init__()
+        self.cfg = cfg
+        self.resampled_objs = []
+        self.obj_idx = {}
+        self.refine_net = _RefineNet(n_iters=0)
+
+    def setup(self, obj_meshes: Dict[str, trimesh.base.Trimesh]):
+        pass
+
+    def forward(self, inp, obj_name: List[str]):
+        # preprare
+        hand_pose = inp["hand_pose"]  # (B, 16x3)
+        bs = hand_pose.shape[0]
+
+        hand_tsl = inp["hand_tsl"]
+        hand_rotmat = aa_to_rotmat(hand_pose.reshape(bs, -1, 3))
+        mano_out: MANOOutput = self.refine_net.mano_layer(hand_pose)
+        hand_verts = mano_out.verts + hand_tsl.unsqueeze(1)
+        hand_joints = mano_out.joints + hand_tsl.unsqueeze(1)
+
+        return {
+            "hand_verts": hand_verts,
+            "joints": hand_joints,
+            "hand_pose": hand_pose,
+            "hand_tsl": hand_tsl,
+        }
+
+
 @register(reg=Refiner.build_mapping, key="hand_obj")
 class HORefiner(nn.Module):
 

@@ -114,6 +114,7 @@ class HO3D(HOdata):
         self.annot_mapping = annotations["annot_mapping"]
         self.sample_idxs = list(range(len(self.seq_idx)))
         self.obj_mapping_name2id = {v: k for k, v in CONST.YCB_IDX2CLASSES.items()}
+        self.obj_mapping_id2name = CONST.YCB_IDX2CLASSES
         if self.mini_factor_of_dataset != float(1):
             random.Random(1).shuffle(self.sample_idxs)
             self.sample_idxs = self.sample_idxs[:int(self.mini_factor_of_dataset * len(self.sample_idxs))]
@@ -355,8 +356,8 @@ class HO3D(HOdata):
     def get_obj_faces(self, idx):
         seq, img_idx = self.seq_idx[idx]
         annot = self.annot_mapping[seq][img_idx]
-        obj_id = annot["objName"]
-        objfaces = self.obj_meshes[obj_id]["faces"]
+        obj_name = annot["objName"]
+        objfaces = self.obj_meshes[obj_name]["faces"]
         objfaces = np.array(objfaces).astype(np.int32)
         return objfaces
 
@@ -375,24 +376,38 @@ class HO3D(HOdata):
     def get_obj_verts_can(self, idx):
         seq, img_idx = self.seq_idx[idx]
         annot = self.annot_mapping[seq][img_idx]
-        obj_id = annot["objName"]
-        verts = self.obj_meshes[obj_id]["verts"]
+        obj_name = annot["objName"]
+        verts = self.obj_meshes[obj_name]["verts"]
         verts = self.cam_extr[:3, :3].dot(verts.transpose()).transpose()
 
         # NOTE: verts_can = verts - bbox_center
         verts_can, bbox_center, bbox_scale = transform.center_vert_bbox(verts, scale=False)  # !! CENTERED HERE
         return np.asfarray(verts_can, dtype=np.float32), bbox_center, bbox_scale
 
+    def get_obj_verts_can_by_obj_id(self, obj_id):
+        obj_name = self.obj_mapping_id2name[obj_id]
+        verts = self.obj_meshes[obj_name]["verts"]
+        verts = self.cam_extr[:3, :3].dot(verts.transpose()).transpose()
+        # NOTE: verts_can = verts - bbox_center
+        verts_can, bbox_center, bbox_scale = transform.center_vert_bbox(verts, scale=False)  # !! CENTERED HERE
+        return np.asfarray(verts_can, dtype=np.float32), bbox_center, bbox_scale
+
+    def get_obj_faces_by_obj_id(self, obj_id):
+        obj_name = self.obj_mapping_id2name[obj_id]
+        objfaces = self.obj_meshes[obj_name]["faces"]
+        objfaces = np.array(objfaces).astype(np.int32)
+        return objfaces
+
     def get_obj_verts_transf(self, idx):
         seq, img_idx = self.seq_idx[idx]
         annot = self.annot_mapping[seq][img_idx]
         rot = cv2.Rodrigues(annot["objRot"])[0]
         tsl = annot["objTrans"]
-        obj_id = annot["objName"]
+        obj_name = annot["objName"]
 
         # This verts IS NOT EQUAL to the one in get_obj_verts_can,
         # since this verts is not translated to vertices center
-        verts = self.obj_meshes[obj_id]["verts"]
+        verts = self.obj_meshes[obj_name]["verts"]
         transf_verts = rot.dot(verts.transpose()).transpose() + tsl
         transf_verts = self.cam_extr[:3, :3].dot(transf_verts.transpose()).transpose()
         return np.array(transf_verts).astype(np.float32)
@@ -450,8 +465,8 @@ class HO3D(HOdata):
     def get_corners_can_(self, idx):
         seq, img_idx = self.seq_idx[idx]
         annot = self.annot_mapping[seq][img_idx]
-        obj_id = annot["objName"]
-        corners = self.obj_meshes[obj_id]["corners"]
+        obj_name = annot["objName"]
+        corners = self.obj_meshes[obj_name]["corners"]
         corners = self.cam_extr[:3, :3].dot(corners.transpose()).transpose()
 
         _, obj_cantrans, obj_canscale = self.get_obj_verts_can(idx)
