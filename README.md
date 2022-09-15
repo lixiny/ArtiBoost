@@ -168,10 +168,9 @@ This script yield the (Ours _Clas_ sym + **Arti**) result in main paper Table 4.
 ## Acknowledge & Citation
 
 ```
-@inproceedings{li2021artiboost,
-    title={{ArtiBoost}: Boosting Articulated 3D Hand-Object Pose Estimation via Online Exploration and Synthesis},
-    author={Li, Kailin and Yang, Lixin and Zhan, Xinyu and Lv, Jun and Xu, Wenqiang and Li, Jiefeng and Lu, Cewu},
-    booktitle={arXiv preprint arXiv:2109.05488},
-    year={2021}
-}
+@InProceedings{yang2022artiboost,
+    author    = {Yang, Lixin and Li, Kailin and Zhan, Xinyu and Lv, Jun and Xu, Wenqiang and Li, Jiefeng and Lu, Cewu},
+    title     = {{ArtiBoost}: Boosting Articulated 3D Hand-Object Pose Estimation via Online Exploration and Synthesis},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year      = {2022}
 ```
