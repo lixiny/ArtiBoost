@@ -97,14 +97,14 @@ vtk==9.0.1 PyQt5==5.15.4 PyQt5-Qt5==5.15.2 PyQt5-sip==12.8.1 mayavi==4.7.2
 ```
 
 Second, you need to connect a display window (could be a display monitor, TeamViewer, or VNC server) that support Qt platform plugin "xcb".  
-Inside the display window, start a new terminal session and append: `--postprocess_fit_mesh` and `--postprocess_fit_mesh` at the end of the shell command,
+Inside the display window, start a new terminal session and append: `--postprocess_fit_mesh` and `--postprocess_draw` at the end of the shell command,
 e.g.
 
 ```sh
 # HO3Dv2, Heatmap-based model, ArtiBoost
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv2_clasbased_artiboost.yaml \
   --gpu_id 0 --submit_dump --filter_unseen_obj_idxs 11 --batch_size 100 \
-  --postprocess_fit_mesh --postprocess_fit_mesh
+  --postprocess_fit_mesh --postprocess_draw
 ```
 
 The rendered qualitative results are stored at `exp/submit_{cfg}_{time}/rendered_image/`
