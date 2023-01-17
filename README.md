@@ -64,12 +64,7 @@ This repo contains models, train, and test codes.
   <img alt="Ubuntu" src="https://img.shields.io/badge/Ubuntu-20.04-green?logo=ubuntu&logoColor=yelgreenlow">
 </a>
 
-<<<<<<< HEAD
-Following the [Installation Instruction](docs/Installation.md) to setup environment, assets, datasets and models.
-=======
 Following the [Installation Instruction](docs/Installation.md) to setup environment, assets, datasets.
-
-> > > > > > > f41e904290938fae31fe9c30ac7d99af447dd2c4
 
 ## Evaluation
 
