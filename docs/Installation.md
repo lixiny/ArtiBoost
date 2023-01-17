@@ -2,63 +2,71 @@
 
 ## Environment
 
-### Get code
+### 1. Get code
 
 ```shell
 $ git clone https://github.com/lixiny/ArtiBoost.git
 $ cd ArtiBoost
 ```
 
-### Set up new environment:
+### 2. Set up new environment:
 
-```shell script
-$ conda env create -f environment_release.yml
+```sh
+$ conda env create -f environment.yml
 $ conda activate artiboost
 ```
 
-### Install dependencies
+### 3. Install dependencies
 
-```shell script
+```sh
+# inside your artiboost env
 $ pip install -r requirements.txt
 ```
 
-### Install thirdparty
+### 4. Install thirdparty
 
 - **dex-ycb-toolkit**
 
-```shell
-$ cd thirdparty
-$ git clone --recursive https://github.com/NVlabs/dex-ycb-toolkit.git
-```
+  ```shell
+  $ cd thirdparty
+  $ git clone --recursive https://github.com/NVlabs/dex-ycb-toolkit.git
+  ```
 
-We need install **dex-ycb-toolkit** as a python package.  
-first, you need to install:
+  We need install **dex-ycb-toolkit** as a python package. Following the steps:
 
-```shell
-$ sudo apt-get install liboctomap-dev
-$ sudo apt-get install libfcl-dev
+  1. you need to install:
 
-# or delete the `python-fcl` in dex-ycb-toolkit/setup.py
-```
+     ```shell
+     $ sudo apt-get install liboctomap-dev
+     $ sudo apt-get install libfcl-dev
 
-second, create a `__init__.py` in `dex_ycb_toolkit`
+     # or delete the `python-fcl` in dex-ycb-toolkit/setup.py
+     ```
 
-```shell
-$ cd thirdparty/dex-ycb-toolkit/dex_ycb_toolkit/
-$ touch __init__.py
-```
+  2. create a `__init__.py` in _dex_ycb_toolkit_
 
-finally, at the directory: `./thirdparty`, use pip install
+     ```shell
+     $ cd thirdparty/dex-ycb-toolkit/dex_ycb_toolkit/
+     $ touch __init__.py
+     ```
 
-```shell
-$ pip install ./dex-ycb-toolkit
-```
+  3. change a line in `dex-ycb-toolkit/setup.py`:
+     ```
+     line #16:  opencv-python ==> opencv-python-headless
+     ```
 
-verify:
+  finally, at the directory: `./thirdparty`, use pip install
 
-```shell
-$ python -c "from dex_ycb_toolkit.dex_ycb import DexYCBDataset, _YCB_CLASSES"
-```
+  ```sh
+  # inside your artiboost env
+  $ pip install ./dex-ycb-toolkit
+  ```
+
+  to verify:
+
+  ```shell
+  $ python -c "from dex_ycb_toolkit.dex_ycb import DexYCBDataset, _YCB_CLASSES"
+  ```
 
 ## Datasets
 
@@ -73,7 +81,7 @@ Now your `./data` folder should have structure like:
     │   ├── evaluation.txt
     │   ├── train
     │   └── train.txt
-    ├── HO3D
+    ├── HO3D_v3
     │   ├── calibration
     │   ├── evaluation
     │   ├── evaluation.txt
@@ -109,8 +117,8 @@ Your `./data` folder should have structure like:
 
 Download our pre-processed YCB objects from:
 
-- [YCB_models_supp](https://www.dropbox.com/s/psp18fxlcx92k4d/YCB_models_supp.zip?dl=0)
-- [YCB_models_process](https://www.dropbox.com/s/vukf9hr8zibcs6n/YCB_models_process.zip?dl=0)
+- [YCB_models_supp](https://drive.google.com/file/d/1v36yY5AOSRO1nN42e8y0bwRAm2rs2QbW/view?usp=share_link)
+- [YCB_models_process](https://drive.google.com/file/d/1lg4_GK3Ztmk6fd0q3cdiqQX-iAqMwFVm/view?usp=share_link)
 
 then unzip and copy them to your `./data`.
 
@@ -118,10 +126,12 @@ then unzip and copy them to your `./data`.
 
 Download our pre-process hand .obj with textures from:
 
-- [HTML_supp](https://www.dropbox.com/s/8k4c0qq0b3rjpsc/HTML_supp.zip?dl=0)
+- [HTML_supp](https://drive.google.com/file/d/1GnQbJJa1OZlnBKUmv1pK7wvUjdr1bzhT/view?usp=share_link)
 
 (optional) Download HTML hand texture model from the [official site](https://handtracker.mpi-inf.mpg.de/projects/HandTextureModel/).  
 then unzip and copy them into `./data`.
+
+---
 
 Finally, you will have `./data` with structure like:
 
@@ -147,4 +157,24 @@ Finally, you will have `./data` with structure like:
 
 ## Data Assets
 
-## Pretrained models
+Data assets are essential for ArtiBoost training and evaluation.  
+Download the **assets** folder at [here](https://drive.google.com/drive/folders/189JIJ7NDUNI1jXu1fVHgbjhYbce-xjB5?usp=share_link) and place it as `./assets`.
+
+The `./assets` folder should contains:
+
+- `GrabNet/`: GrabNet model's weights.  
+   It is a copy of **_GrabNet model files/weights_** from [GRAB](https://grab.is.tue.mpg.de/index.html) [_Taheri etal ECCV2020_]
+- `hasson20_assets/`:  
+   This folder contains essentials to run our [honetMANO](../anakin/models/honetMANO.py) on FPHAB dataset.  
+   It is a copy of _**assets**_ folder in [handobjectconsist](https://github.com/hassony2/handobjectconsist) [_Hasson etal CVPR2020_].
+
+- `postprocess/`:  
+   [IKNet](../anakin/postprocess/iknet/model.py) model's weights. Convert hand joints position to MANO rotations.  
+   This checkpoints is trained in the original [HandTailor](https://github.com/LyuJ1998/HandTailor) [_Lv etal BMVC2021_]
+
+- `mano_v1_2/`: MANO hand model.  
+   Download **_Models & Code_** at [MANO website](https://mano.is.tue.mpg.de/download.php). Then unzip the downloaded file: _mano_v1_2.zip_.
+
+- `ho3d_corners.pkl`: HO3D object corner's annotation.
+- `extend_models_info.json`: YCB objects' principal axis of inertia.  
+   For evaluating maximum symmetry-aware surface distance (MSSD).

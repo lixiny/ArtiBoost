@@ -5,6 +5,7 @@ from torch.utils import model_zoo
 
 
 class CheckpointIO(object):
+
     def __init__(self, checkpoint_dir="./chkpts", **kwargs):
         self.module_dict = kwargs
         self.checkpoint_dir = checkpoint_dir
@@ -37,7 +38,7 @@ class CheckpointIO(object):
             scalars = self.parse_state_dict(state_dict)
             return scalars
         else:
-            raise FileExistsError
+            raise FileExistsError(filename)
 
     def parse_state_dict(self, state_dict):
         for k, v in self.module_dict.items():

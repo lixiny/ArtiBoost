@@ -36,13 +36,17 @@ class Recorder:
         root_path: str = "./exp",
         rank: Optional[int] = None,
         time_f: Optional[float] = None,
+        eval_only: bool = False,
     ):
-        assert exp_id == "default" or self.get_git_commit(), "MUST commit before the experiment!"
+        if not eval_only:
+            assert exp_id == "default" or self.get_git_commit(), "MUST commit before the experiment!"
+        
         self.timestamp = time.strftime("%Y_%m%d_%H%M_%S", time.localtime(time_f if time_f else time.time()))
         self.exp_id = exp_id
         self.cfg = cfg
         self.dump_path = os.path.join(root_path, f"{exp_id}_{self.timestamp}")
         self.rank = rank
+        self.eval_only = eval_only
         self._record_init_info()
 
     def _record_init_info(self: T):
@@ -52,7 +56,7 @@ class Recorder:
             assert logger.filehandler is None, "log file path has been set"
             logger.set_log_file(path=self.dump_path, name=f"{self.exp_id}_{self.timestamp}")
             logger.info(f"run command: {' '.join(sys.argv)}")
-            if self.exp_id != "default":
+            if not self.eval_only and self.exp_id != "default":
                 logger.info(f"git commit: {self.get_git_commit()}")
             with open(os.path.join(self.dump_path, "dump_cfg.yaml"), "w") as f:
                 yaml.dump(self.cfg, f, Dumper=yaml.Dumper, sort_keys=False)

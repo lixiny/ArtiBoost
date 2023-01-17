@@ -1,0 +1,199 @@
+MANAGER:
+  SYNTH_FACTOR: 0.6
+  VAL_LEN: 100000
+
+  OBJ_ENGINE:
+    OBJ:
+      - 010_potted_meat_can
+      - 021_bleach_cleanser
+      - 006_mustard_bottle
+      - 019_pitcher_base
+    OBJ_ORIGIN_DATASET: HO3D
+
+  VIEW_ENGINE:
+    PERSP_U_BINS: 12
+    PERSP_THETA_BINS: 24
+    CAMERA_Z_RANGE: [0.45, 0.55]
+
+  GRASP_ENGINE:
+    GRASP_NUM: 50
+    GRASP_ORIGIN_DATASET: HO3D
+
+  GRASP:
+    NUM: 50
+    OBJ:
+      - 010_potted_meat_can
+      - 021_bleach_cleanser
+      - 006_mustard_bottle
+      - 019_pitcher_base
+
+  FILTER:
+    OCCLU: false
+    BACK: true
+
+  WEIGHT_UPDATE:
+    LOWER: 0.1
+    UPPER: 10.0
+  UPDATE_METHOD: method_1
+  DIST_THRESHOLD:
+    LOWER: 8.0
+    UPPER: 16.0
+
+  SCRAMBLER:
+    TYPE: "random"
+    HAND_TSL_SIGMA: 0.01
+    HAND_POSE_SIGMA: 0.1
+
+  REFINER:
+    TYPE: "hand_obj"
+    PRETRAINED: "assets/GrabNet/refinenet.pt"
+    ITERS: 3
+
+  RENDERER:
+    BGS_PATH: "assets/synth_bg"
+    RENDER_SIZE:
+      - 512
+      - 512
+    CAM_PARAM:
+      FX: 435.0
+      FY: 435.0
+      CX: 256.0
+      CY: 256.0
+
+  EVALUATOR:
+    - TYPE: LossesMetric
+      VIS_LOSS_KEYS: []
+    - TYPE: Mean3DEPE_VAL
+      VAL_KEYS: [corners_3d_abs, joints_3d_abs]
+      MILLIMETERS: true
+    - TYPE: Mean3DEPE
+      VAL_KEYS: [corners_3d_abs, joints_3d_abs]
+      MILLIMETERS: true
+    - TYPE: Vis2DMetric
+      NCOL: 4
+      NROW: 4
+
+DATASET:
+  TRAIN:
+    TYPE: HO3D
+    DATA_SPLIT: train
+    DATA_ROOT: ./data
+    SPLIT_MODE: paper
+    AUG: true
+    MINI_FACTOR: 1.0
+
+    AUG_PARAM:
+      SCALE_JIT: 0.1
+      CENTER_JIT: 0.1
+      MAX_ROT: 0.2
+
+  TEST:
+    TYPE: HO3D
+    DATA_SPLIT: test
+    DATA_ROOT: ./data
+    SPLIT_MODE: paper
+    AUG: false
+    AUG_PARAM: ""
+
+DATA_PRESET:
+  PRESET_TYPE: ""
+  USE_CACHE: true
+  FILTER_NO_CONTACT: false
+  FILTER_THRESH: 0.0
+  BBOX_EXPAND_RATIO: 1.2
+  FULL_IMAGE: false
+  # QUERIES:
+  #   [
+  #     "image",
+  #     "joints_2d",
+  #     "joints_3d",
+  #     "corners_can",
+  #     "corners_3d",
+  #     "corners_2d",
+  #     "cam_intr",
+  #     "joints_vis",
+  #     "corners_vis",
+  #     "obj_transf",
+  #     "hand_pose",
+  #   ]
+
+  IMAGE_SIZE:
+    - 224
+    - 224
+  HEATMAP_SIZE:
+    - 28
+    - 28
+  HEATMAP_SIGMA: 2.0
+  CENTER_IDX: 0
+  CROP_MODEL: root_obj
+
+TRAIN:
+  BATCH_SIZE: 128
+  EPOCH: 200
+  OPTIMIZER: "adam"
+  LR: 0.00005
+  LR_FACTOR: 0.1
+  WEIGHT_DECAY: 0
+  LR_DECAY_STEP: 100
+  LR_DECAY_GAMMA: 1.0
+  MANUAL_SEED: 1
+  GRAD_CLIP: 0.001
+  EVAL_FREQ: 5
+  VAL_START_EPOCH: 15
+
+ARCH:
+  TYPE: HybridBaseline
+  PRETRAINED: ""
+  BACKBONE:
+    TYPE: ResNet34
+    PRETRAINED: true
+    FREEZE_BATCHNORM: false
+  HYBRID_HEAD:
+    TYPE: IntegralDeconvHead
+    NCLASSES: 22
+    DECONV_WITH_BIAS: false
+    NORM_TYPE: "softmax"
+    INPUT_CHANNEL: 512
+    DEPTH_RESOLUTION: 28
+    NUM_DECONV_LAYERS: 2
+    NUM_DECONV_FILTERS:
+      - 256
+      - 256
+    NUM_DECONV_KERNELS:
+      - 4
+      - 4
+    FINAL_CONV_KERNEL: 1
+  BOX_HEAD:
+    TYPE: MLP_O
+    LAYERS_N: [512, 256, 128]
+    OUT_CHANNEL: 6
+  PREVIOUS: []
+
+LAMBDAS: [0.5, 0.2, 0.1]
+CRITERION:
+  - TYPE: JointsLoss
+    LAMBDA_JOINTS_3D: 1.0
+    LAMBDA_CORNERS_3D: 0.2
+  - TYPE: HandOrdLoss
+  - TYPE: SceneOrdLoss
+
+EVALUATOR:
+  - TYPE: LossesMetric
+    VIS_LOSS_KEYS: []
+  - TYPE: Hand3DPCKMetric
+    VAL_MIN: 0.00
+    VAL_MAX: 0.05
+    STEPS: 20
+  - TYPE: Obj3DPCKMetric
+    VAL_MIN: 0.00
+    VAL_MAX: 0.05
+    STEPS: 20
+  - TYPE: Mean3DEPE
+    VAL_KEYS: [corners_3d_abs, joints_3d_abs]
+    MILLIMETERS: true
+  - TYPE: Vis2DMetric
+    NCOL: 6
+    NROW: 6
+  - TYPE: ValMetricMean3DEPE2
+    VAL_KEYS: [corners_3d_abs, joints_3d_abs]
+    MILLIMETERS: true

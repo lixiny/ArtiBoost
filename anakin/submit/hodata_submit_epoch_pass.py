@@ -1,27 +1,28 @@
-from typing import Optional, Union, Any, List
-import torch
-import numpy as np
+import json
+import os
+import shutil
+import subprocess
+from typing import (Any, Callable, List, Mapping, Optional, Sequence, TypeVar, Union)
 
+import numpy as np
+import torch
 from anakin.criterions.criterion import Criterion
+from anakin.datasets.hodata import HOdata
 from anakin.metrics.evaluator import Evaluator
 from anakin.models.arch import Arch
 from anakin.opt import arg
+from anakin.utils.logger import logger
 from anakin.utils.etqdm import etqdm
 from termcolor import colored
 
 from .submit_epoch_pass import SubmitEpochPass
-from .ho_submit_epoch_pass import HOSubmitEpochPass
-
-import json
-import shutil
-import subprocess
 
 
-@SubmitEpochPass.reg("ho3d")
-class HO3DSubmitEpochPass(HOSubmitEpochPass):
+@SubmitEpochPass.reg("hodata")
+class HOSubmitEpochPass(SubmitEpochPass):
+
     def __init__(self, cfg):
         super().__init__(cfg)
-
         self.true_root = arg.true_root
 
     @staticmethod
@@ -32,6 +33,7 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
 
     def dump_json(self, pred_out_path, xyz_pred_list, verts_pred_list, codalab=True):
         """ Save predictions into a json file for official ho3dv2 evaluation. """
+
         # make sure its only lists
         def roundall(rows):
             return [[round(val, 5) for val in row] for row in rows]
@@ -42,14 +44,16 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
         # save to a json
         with open(pred_out_path, "w") as fo:
             json.dump([xyz_pred_list, verts_pred_list], fo)
-        print(
-            "Dumped %d joints and %d verts predictions to %s" % (len(xyz_pred_list), len(verts_pred_list), pred_out_path)
-        )
+        logger.info("Dumped %d joints and %d verts predictions to %s" % \
+            (len(xyz_pred_list), len(verts_pred_list), pred_out_path))
         if codalab:
             file_name = ".".join(pred_out_path.split("/")[-1].split(".")[:-1])
-            if pred_out_path != f"./common/{file_name}.json":
-                shutil.copy(pred_out_path, f"./common/{file_name}.json")
-            subprocess.call(["zip", "-j", f"./common/{file_name}.zip", f"./common/{file_name}.json"])
+            zipped_path = pred_out_path.replace('.json', '.zip')
+            subprocess.call(["zip", "-j", zipped_path, pred_out_path])
+            logger.warning(f"Finised, submit {zipped_path} to CodaLab for evaluation! ")
+            # if pred_out_path != f"./common/{file_name}.json":
+            #     shutil.copy(pred_out_path, f"./common/{file_name}.json")
+            # subprocess.call(["zip", "-j", f"./common/{file_name}.zip", f"./common/{file_name}.json"])
 
     def __call__(
         self,
@@ -60,6 +64,7 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
         evaluator: Optional[Evaluator],
         rank: int,
         dump_path: str,
+        draw_path: str,
     ):
         arch_model.eval()
         if evaluator:
@@ -107,6 +112,7 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
                 self.sample_counter = self.draw_batch(
                     batch["image"],
                     batch["cam_intr"],
+                    batch["sample_idx"],
                     pred_joints,
                     fitted_verts,
                     pred_obj_rotmat,
@@ -114,6 +120,7 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
                     pred_obj_corners,
                     hand_faces,
                     data_loader.dataset,
+                    draw_path=draw_path,
                 )
 
             # ? <<<<<<<<<<<<<<<<<<<<<<<<<
@@ -147,5 +154,71 @@ class HO3DSubmitEpochPass(HOSubmitEpochPass):
 
         if self.dump:
             self.dump_json(dump_path, res_joints, res_verts, codalab=True)
+
+    def draw_batch(
+        self,
+        image: torch.Tensor,
+        cam_intr: torch.Tensor,
+        sample_idx: torch.Tensor,
+        pred_joints: torch.Tensor,
+        fitted_verts: Sequence[np.ndarray],
+        pred_obj_rotmat: torch.Tensor,
+        pred_obj_tsl: torch.Tensor,
+        pred_obj_corners: torch.Tensor,
+        hand_faces: np.ndarray,
+        dataset: HOdata,
+        draw_path: str,
+        **kwargs,
+    ):
+        from anakin.viztools.draw import save_a_image_with_mesh_joints_objects
+
+        os.makedirs(draw_path, exist_ok=True)
+
+        img_list = image + 0.5
+        img_list = img_list.permute(0, 2, 3, 1)
+        img_list = img_list.cpu().numpy()
+        intr_mat = cam_intr.cpu().numpy()
+
+        batch_size = img_list.shape[0]
+
+        # DexYCB corners' order is different from HO3D
+        # TODO: Next time, merge the corners' order of all datasets before training!
+        if dataset.name == "DexYCB":
+            pred_obj_corners = pred_obj_corners[:, [0, 1, 3, 2, 4, 5, 7, 6]]
+
+        for batch_id in range(batch_size):
+            original_id = sample_idx[batch_id].item()
+            obj_faces = dataset.get_obj_faces(original_id)
+            curr_obj_corner = pred_obj_corners[batch_id].cpu().numpy()
+            curr_obj_rotmat = pred_obj_rotmat[batch_id].cpu().numpy()
+            curr_obj_tsl = pred_obj_tsl[batch_id].cpu().numpy()
+
+            obj_v_can, _, _ = dataset.get_obj_verts_can(original_id)
+            curr_obj_v = (curr_obj_rotmat @ obj_v_can.T).T + curr_obj_tsl
+
+            curr_j = pred_joints[batch_id].cpu().numpy()
+            curr_intr = intr_mat[batch_id]
+            curr_j2d = (curr_intr @ curr_j.T).T
+            curr_j2d = curr_j2d[:, 0:2] / curr_j2d[:, 2:3]
+            curr_obj_corner_2d = (curr_intr @ curr_obj_corner.T).T
+            curr_obj_corner_2d = curr_obj_corner_2d[:, 0:2] / curr_obj_corner_2d[:, 2:3]
+            save_a_image_with_mesh_joints_objects(
+                img_list[batch_id],
+                curr_intr,
+                fitted_verts[batch_id],
+                hand_faces,
+                curr_j2d,
+                curr_j,
+                curr_obj_v,
+                obj_faces,
+                curr_obj_corner_2d,
+                curr_obj_corner,
+                os.path.join(draw_path, f"{self.sample_counter:0>4}.png"),
+                renderer=self.renderer,
+            )
+
+            self.sample_counter += 1
+
+        return self.sample_counter
 
         # ? >>>>>>>>>>>>>>>>>>>>>>>>>

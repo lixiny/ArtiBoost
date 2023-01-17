@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 import torchvision.transforms.functional as tvF
-from anakin.datasets.hoquery import Queries, SynthQueries, match_collate_queries
+from anakin.datasets.hoquery import (Queries, SynthQueries, match_collate_queries)
 from anakin.utils import img_augment, transform
 from anakin.utils.logger import logger
 from anakin.utils.misc import CONST
@@ -445,5 +445,6 @@ class HOdata(ABC):
         img = tvF.to_tensor(img).float()
         img = tvF.normalize(img, [0.5, 0.5, 0.5], [1, 1, 1])
         sample[Queries.IMAGE] = img
+        sample[Queries.SAMPLE_IDX] = idx
 
         return sample

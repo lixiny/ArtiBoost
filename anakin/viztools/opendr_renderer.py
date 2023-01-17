@@ -9,6 +9,7 @@ from .misc import CONSTANTS
 
 
 class OpenDRRenderer(object):
+
     def __init__(self, img_size=256, flength=500.0):  # 822.79041):  #
         self.w = img_size
         self.h = img_size
@@ -54,12 +55,8 @@ class OpenDRRenderer(object):
                     final_vertex_color = vertex_color
             else:
                 final_vertex_color = None
-        elif (
-            isinstance(verts, Iterable)
-            and isinstance(verts, Sized)
-            and isinstance(faces, Iterable)
-            and isinstance(faces, Sized)
-        ):
+        elif (isinstance(verts, Iterable) and isinstance(verts, Sized) and isinstance(faces, Iterable) and
+              isinstance(faces, Sized)):
             # support multiple mesh
             assert len(verts) == len(faces), f"verts and faces do not match, got {len(verts)} and {len(faces)}"
 
@@ -80,15 +77,15 @@ class OpenDRRenderer(object):
                 for mesh_id in range(n_mesh):
                     if vertex_color[mesh_id].ndim == 1:
                         final_vertex_color.append(
-                            np.repeat(vertex_color[mesh_id][None, ...], len(verts[mesh_id]), axis=0)
-                        )
+                            np.repeat(vertex_color[mesh_id][None, ...], len(verts[mesh_id]), axis=0))
                     else:
                         final_vertex_color.append(vertex_color[mesh_id])
                 final_vertex_color = np.concatenate(final_vertex_color, axis=0)
             else:
                 final_vertex_color = None
         else:
-            raise NotImplementedError(f"opendr do not support verts and faces, got type {type(verts)} and {type(faces)}")
+            raise NotImplementedError(
+                f"opendr do not support verts and faces, got type {type(verts)} and {type(faces)}")
 
         dist = np.zeros(5)
         dist = dist.flatten()
@@ -109,7 +106,11 @@ class OpenDRRenderer(object):
         f = np.array([cam_intrinsics[0, 0], cam_intrinsics[1, 1]])
 
         use_cam = ProjectPoints(
-            rt=rt, t=t, f=f, c=pp, k=dist  # camera translation  # focal lengths  # camera center (principal point)
+            rt=rt,
+            t=t,
+            f=f,
+            c=pp,
+            k=dist  # camera translation  # focal lengths  # camera center (principal point)
         )  # OpenCv distortion params
 
         if near is None:

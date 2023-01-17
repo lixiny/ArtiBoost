@@ -2,7 +2,6 @@ import atexit
 import random
 from copy import deepcopy
 from typing import Dict, List, Optional, Sequence, Union
-
 import numpy as np
 import torch
 import trimesh
@@ -51,14 +50,13 @@ def render_worker(
             continue
 
         # fetch one
-        obj_name = deepcopy(msg["objname"])  # get a local clone
-        pose = deepcopy(msg["pose"])
-        hand_verts = deepcopy(msg["hand_verts"])
+        obj_name = msg["objname"]  # get a local clone
+        pose = msg["pose"]
+        hand_verts = msg["hand_verts"]
         xid = msg["id"]
-        del msg  # make sure to release shared memory
-
         img = renderer(obj_name=obj_name, obj_pose=pose, hand_verts=hand_verts)
         output_queue_list[xid].put(img)
+        del msg  # make sure to release shared memory
 
 
 class RendererProvider:
