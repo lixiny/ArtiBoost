@@ -81,7 +81,7 @@ Now your `./data` folder should have structure like:
     │   ├── evaluation.txt
     │   ├── train
     │   └── train.txt
-    ├── HO3D
+    ├── HO3D_v3
     │   ├── calibration
     │   ├── evaluation
     │   ├── evaluation.txt
