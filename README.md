@@ -43,7 +43,7 @@
 
 <br />
 
-This repo contains models, train, and test code.
+This repo contains models, train, and test codes.
 
 ## TODO
 
@@ -70,7 +70,7 @@ Following the [Installation Instruction](docs/Installation.md) to setup environm
 
 ### HO3Dv2, Heatmap-based model, ArtiBoost
 
-Download checkpoint: [pretrained](https://www.dropbox.com/s/wy0eobxa3ontdp6/artiboost_ho3dv2_clasbased_100e.pth.tar?dl=0) (`artiboost_ho3dv2_clasbased_100e.pth.tar`) to `./checkpoints`.  
+Download checkpoint: [pretrained](https://drive.google.com/file/d/1AEZdR46FslwRWrm0NYUh9h6riO1XwXhO/view?usp=sharing) (`artiboost_ho3dv2_clasbased_100e.pth.tar`) to `./checkpoints`.  
 Then run:
 
 ```shell
@@ -87,7 +87,7 @@ This script yield the (Our _Clas_ + **Arti**) result in main paper Table 2.
 You can also **visualize the prediction** as the images below:
 
 <p align="center">
-  <img src="docs/qualitative.png"" alt="capture" width="100%">
+  <img src="docs/qualitative.png"" alt="capture" width="90%">
 </p>
 
 First, you need install extra packages for rendering. Use `pip` to sequentially install:
@@ -96,7 +96,7 @@ First, you need install extra packages for rendering. Use `pip` to sequentially 
 vtk==9.0.1 PyQt5==5.15.4 PyQt5-Qt5==5.15.2 PyQt5-sip==12.8.1 mayavi==4.7.2
 ```
 
-Second, you need to connect a display window (could be a display monitor, TeamViewer, or VNC server) that support Qt platform plugin "xcb".  
+Second, you need to connect a display window (could be a display monitor, TeamViewer, or VNC server) that supports Qt platform plugin "xcb".  
 Inside the display window, start a new terminal session and append: `--postprocess_fit_mesh` and `--postprocess_draw` at the end of the shell command,
 e.g.
 
@@ -109,11 +109,9 @@ $ python train/submit_reload.py --cfg config_eval/eval_ho3dv2_clasbased_artiboos
 
 The rendered qualitative results are stored at `exp/submit_{cfg}_{time}/rendered_image/`
 
----
-
 ### HO3Dv2, Regression-based model, ArtiBoost.
 
-[pretrained](https://www.dropbox.com/s/sofy0sdhe9azuc1/artiboost_ho3dv2_regbased_100e.pth.tar?dl=0) (`artiboost_ho3dv2_regbased_100e.pth.tar`)
+[pretrained](https://drive.google.com/file/d/1RmbQ3jEkvK9yaa-MFVwrAxtzJYqjxMx5/view?usp=sharing) (`artiboost_ho3dv2_regbased_100e.pth.tar`)
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv2_regbased_artiboost.yaml \
@@ -122,11 +120,9 @@ $ python train/submit_reload.py --cfg config_eval/eval_ho3dv2_regbased_artiboost
 
 This script yield the (Our _Reg_ + **Arti**) result in main paper Table 2.
 
----
-
 ### HO3Dv3, Heatmap-based model, ArtiBoost
 
-[pretrained](https://www.dropbox.com/s/ghg3aks2ref8eog/artiboost_ho3dv3_clasbased_200e.pth.tar?dl=0) (`artiboost_ho3dv3_clasbased_200e.pth.tar`)
+[pretrained](https://drive.google.com/file/d/1PGTPki_AYtcJaHog_1EELvJHZJPY8VSn/view?usp=sharing) (`artiboost_ho3dv3_clasbased_200e.pth.tar`)
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_artiboost.yaml \
@@ -136,11 +132,9 @@ $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_artiboos
 This script yield the (Our _Clas_ + **Arti**) result in main paper Table 5.  
 Upload HO3Dv3 Codalab submission file to the [HO3Dv3 codalab](https://codalab.lisn.upsaclay.fr/competitions/4393) server and wait for the evaluation to finish.
 
----
-
 ### HO3Dv3, Heatmap-based, Object symmetry model, ArtiBoost
 
-[pretrained](https://www.dropbox.com/s/bzp77vs187qijs2/artiboost_ho3dv3_clasbased_sym_200e.pth.tar?dl=0) (`artiboost_ho3dv3_clasbased_sym_200e.pth.tar`)
+[pretrained](https://drive.google.com/file/d/1lCU2hemolkJ7Z7armyYHvJv-yEiQKxYz/view?usp=sharing) (`artiboost_ho3dv3_clasbased_sym_200e.pth.tar`)
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_sym_artiboost.yaml \
@@ -149,11 +143,9 @@ $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_sym_arti
 
 This script yield the (Ours _Clas_ sym + **Arti**) result in main paper Table 5.
 
----
-
 ### DexYCB, Heatmap-based, Object symmetry model, ArtiBoost
 
-[pretrained](https://www.dropbox.com/s/0rq0ffbdu49tv7x/artiboost_dexycb_clasbased_sym_100e.pth.tar?dl=0) (`artiboost_dexycb_clasbased_sym_100e.pth.tar`)
+[pretrained](https://drive.google.com/file/d/1i49UVkWQtXoaRHjV3JtHQ_l1nO6vMx89/view?usp=share_link) (`artiboost_dexycb_clasbased_sym_100e.pth.tar`)
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_dexycb_clasbased_sym_artiboost.yaml --gpu_id 0

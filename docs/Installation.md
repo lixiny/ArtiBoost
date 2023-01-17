@@ -117,8 +117,8 @@ Your `./data` folder should have structure like:
 
 Download our pre-processed YCB objects from:
 
-- [YCB_models_supp](https://www.dropbox.com/s/psp18fxlcx92k4d/YCB_models_supp.zip?dl=0)
-- [YCB_models_process](https://www.dropbox.com/s/vukf9hr8zibcs6n/YCB_models_process.zip?dl=0)
+- [YCB_models_supp](https://drive.google.com/file/d/1v36yY5AOSRO1nN42e8y0bwRAm2rs2QbW/view?usp=share_link)
+- [YCB_models_process](https://drive.google.com/file/d/1lg4_GK3Ztmk6fd0q3cdiqQX-iAqMwFVm/view?usp=share_link)
 
 then unzip and copy them to your `./data`.
 
@@ -126,7 +126,7 @@ then unzip and copy them to your `./data`.
 
 Download our pre-process hand .obj with textures from:
 
-- [HTML_supp](https://www.dropbox.com/s/8k4c0qq0b3rjpsc/HTML_supp.zip?dl=0)
+- [HTML_supp](https://drive.google.com/file/d/1GnQbJJa1OZlnBKUmv1pK7wvUjdr1bzhT/view?usp=share_link)
 
 (optional) Download HTML hand texture model from the [official site](https://handtracker.mpi-inf.mpg.de/projects/HandTextureModel/).  
 then unzip and copy them into `./data`.
@@ -157,22 +157,24 @@ Finally, you will have `./data` with structure like:
 
 ## Data Assets
 
-Download the data [assets](https://www.dropbox.com/sh/v2g2nxhucxs0sdh/AAALDIo3BTuMV77a7zn-EV8Ya?dl=0) that are essential for ArtiBoost training and evaluation. Place it at `./assets`.
+Data assets are essential for ArtiBoost training and evaluation.  
+Download the **assets** folder at [here](https://drive.google.com/drive/folders/189JIJ7NDUNI1jXu1fVHgbjhYbce-xjB5?usp=share_link) and place it as `./assets`.
 
 The `./assets` folder should contains:
 
 - `GrabNet/`: GrabNet model's weights.  
-   a copy of **_GrabNet model files/weights_** from [GRAB](https://grab.is.tue.mpg.de/index.html) [_Taheri etal ECCV2020_]
+   It is a copy of **_GrabNet model files/weights_** from [GRAB](https://grab.is.tue.mpg.de/index.html) [_Taheri etal ECCV2020_]
 - `hasson20_assets/`:  
    This folder contains essentials to run our [honetMANO](../anakin/models/honetMANO.py) on FPHAB dataset.  
-   a copy of _**assets**_ folder in [handobjectconsist](https://github.com/hassony2/handobjectconsist) [_Hasson etal CVPR2020_].
+   It is a copy of _**assets**_ folder in [handobjectconsist](https://github.com/hassony2/handobjectconsist) [_Hasson etal CVPR2020_].
 
 - `postprocess/`:  
-   [IKNet](../anakin/postprocess/iknet/model.py) model's weights. Convert hand joints to MANO poses.  
+   [IKNet](../anakin/postprocess/iknet/model.py) model's weights. Convert hand joints position to MANO rotations.  
    This checkpoints is trained in the original [HandTailor](https://github.com/LyuJ1998/HandTailor) [_Lv etal BMVC2021_]
 
 - `mano_v1_2/`: MANO hand model.  
    Download **_Models & Code_** at [MANO website](https://mano.is.tue.mpg.de/download.php). Then unzip the downloaded file: _mano_v1_2.zip_.
 
 - `ho3d_corners.pkl`: HO3D object corner's annotation.
-- `extend_models_info.json`: YCB objects' principal axis of inertia. Used to evaluate MSSD.
+- `extend_models_info.json`: YCB objects' principal axis of inertia.  
+   For evaluating maximum symmetry-aware surface distance (MSSD).
