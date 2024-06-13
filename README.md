@@ -70,7 +70,7 @@ Following the [Installation Instruction](docs/Installation.md) to setup environm
 
 ### HO3Dv2, Heatmap-based model, ArtiBoost
 
-Download checkpoint: [pretrained](https://drive.google.com/file/d/1AEZdR46FslwRWrm0NYUh9h6riO1XwXhO/view?usp=sharing) (`artiboost_ho3dv2_clasbased_100e.pth.tar`) to `./checkpoints`.  
+Download model checkpoint: :link: [artiboost_ho3dv2_clasbased_100e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/)  to `./checkpoints`.  
 Then run:
 
 ```shell
@@ -111,7 +111,7 @@ The rendered qualitative results are stored at `exp/submit_{cfg}_{time}/rendered
 
 ### HO3Dv2, Regression-based model, ArtiBoost.
 
-[pretrained](https://drive.google.com/file/d/1RmbQ3jEkvK9yaa-MFVwrAxtzJYqjxMx5/view?usp=sharing) (`artiboost_ho3dv2_regbased_100e.pth.tar`)
+:link: [artiboost_ho3dv2_regbased_100e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/artiboost_ho3dv2_regbased_100e.pth.tar) 
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv2_regbased_artiboost.yaml \
@@ -122,7 +122,7 @@ This script yield the (Our _Reg_ + **Arti**) result in main paper Table 2.
 
 ### HO3Dv3, Heatmap-based model, ArtiBoost
 
-[pretrained](https://drive.google.com/file/d/1PGTPki_AYtcJaHog_1EELvJHZJPY8VSn/view?usp=sharing) (`artiboost_ho3dv3_clasbased_200e.pth.tar`)
+:link: [artiboost_ho3dv3_clasbased_200e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/artiboost_ho3dv3_clasbased_200e.pth.tar) 
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_artiboost.yaml \
@@ -134,7 +134,7 @@ Upload HO3Dv3 Codalab submission file to the [HO3Dv3 codalab](https://codalab.li
 
 ### HO3Dv3, Heatmap-based, Object symmetry model, ArtiBoost
 
-[pretrained](https://drive.google.com/file/d/1lCU2hemolkJ7Z7armyYHvJv-yEiQKxYz/view?usp=sharing) (`artiboost_ho3dv3_clasbased_sym_200e.pth.tar`)
+:link: [artiboost_ho3dv3_clasbased_sym_200e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/artiboost_ho3dv3_clasbased_sym_200e.pth.tar) 
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_ho3dv3_clasbased_sym_artiboost.yaml \
@@ -145,7 +145,7 @@ This script yield the (Ours _Clas_ sym + **Arti**) result in main paper Table 5.
 
 ### DexYCB, Heatmap-based, Object symmetry model, ArtiBoost
 
-[pretrained](https://drive.google.com/file/d/1i49UVkWQtXoaRHjV3JtHQ_l1nO6vMx89/view?usp=share_link) (`artiboost_dexycb_clasbased_sym_100e.pth.tar`)
+:link: [artiboost_dexycb_clasbased_sym_100e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/artiboost_dexycb_clasbased_sym_100e.pth.tar)
 
 ```shell
 $ python train/submit_reload.py --cfg config_eval/eval_dexycb_clasbased_sym_artiboost.yaml --gpu_id 0

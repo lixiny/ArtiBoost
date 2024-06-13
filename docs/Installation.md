@@ -117,8 +117,8 @@ Your `./data` folder should have structure like:
 
 Download our pre-processed YCB objects from:
 
-- [YCB_models_supp](https://drive.google.com/file/d/1v36yY5AOSRO1nN42e8y0bwRAm2rs2QbW/view?usp=share_link)
-- [YCB_models_process](https://drive.google.com/file/d/1lg4_GK3Ztmk6fd0q3cdiqQX-iAqMwFVm/view?usp=share_link)
+- :link: [YCB_models_supp](https://huggingface.co/lixiny/ArtiBoost/blob/main/data/YCB_models_supp.zip)
+- :link:  [YCB_models_process](https://huggingface.co/lixiny/ArtiBoost/blob/main/data/YCB_models_process.zip)
 
 then unzip and copy them to your `./data`.
 
@@ -126,7 +126,7 @@ then unzip and copy them to your `./data`.
 
 Download our pre-process hand .obj with textures from:
 
-- [HTML_supp](https://drive.google.com/file/d/1GnQbJJa1OZlnBKUmv1pK7wvUjdr1bzhT/view?usp=share_link)
+- :link: [HTML_supp](https://huggingface.co/lixiny/ArtiBoost/blob/main/data/HTML_supp.zip)
 
 (optional) Download HTML hand texture model from the [official site](https://handtracker.mpi-inf.mpg.de/projects/HandTextureModel/).  
 then unzip and copy them into `./data`.
@@ -158,7 +158,7 @@ Finally, you will have `./data` with structure like:
 ## Data Assets
 
 Data assets are essential for ArtiBoost training and evaluation.  
-Download the **assets** folder at [here](https://drive.google.com/drive/folders/189JIJ7NDUNI1jXu1fVHgbjhYbce-xjB5?usp=share_link) and place it as `./assets`.
+Download the **assets** folder at :link: [here](https://huggingface.co/lixiny/ArtiBoost/tree/main/assets) and place it as `./assets`.
 
 The `./assets` folder should contains:
 
