@@ -70,7 +70,7 @@ Following the [Installation Instruction](docs/Installation.md) to setup environm
 
 ### HO3Dv2, Heatmap-based model, ArtiBoost
 
-Download model checkpoint: :link: [artiboost_ho3dv2_clasbased_100e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/)  to `./checkpoints`.  
+Download model checkpoint: :link: [artiboost_ho3dv2_clasbased_100e.pth.tar](https://huggingface.co/lixiny/ArtiBoost/blob/main/checkpoints/artiboost_ho3dv2_clasbased_100e.pth.tar)  to `./checkpoints`.  
 Then run:
 
 ```shell
